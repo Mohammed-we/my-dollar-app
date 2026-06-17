@@ -1,5 +1,0 @@
-[build]
-  base = "exchange-tracker"
-  publish = ".next"
-  command = "npm run build"
-  

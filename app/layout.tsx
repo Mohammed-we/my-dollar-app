@@ -18,6 +18,10 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "شركة الدولار توب",
   description: "خدمات الصرافة والدفع الإلكتروني",
+
+  icons: {
+    icon: "/favicon.jpeg", // ضع مسار صورتك هنا
+  },
 };
 
 export default function RootLayout({

@@ -1,3 +1,152 @@
+// "use client";
+
+// import { useState, useEffect } from "react";
+// import Papa from "papaparse";
+// import Head from 'next/head';
+
+// export default function UserInterface() {
+//   const [country, setCountry] = useState("اختر الدولة");
+//   const [method, setMethod] = useState("طريقة التحويل");
+//   const [showAccount, setShowAccount] = useState(false);
+//   const [accounts, setAccounts] = useState<any>({});
+//   const [isLoading, setIsLoading] = useState(true);
+//   const [error, setError] = useState(false);
+
+//   const [isOpenCountry, setIsOpenCountry] = useState(false);
+//   const [isOpenMethod, setIsOpenMethod] = useState(false);
+
+//   const sheetUrl =
+//     "https://docs.google.com/spreadsheets/d/e/2PACX-1vRwWDBB6yYXnFVXSzH8jWk3_hE9I01uyNv1_BIVyShqjaYsfwTlOraC4DQBpqwcTNah7dnb9Aau537n/pub?gid=0&single=true&output=csv";
+
+//   useEffect(() => {
+//     Papa.parse(sheetUrl, {
+//       download: true,
+//       header: true,
+//       skipEmptyLines: true,
+//       complete: (results) => {
+//         const data: any = {};
+//         results.data.forEach((row: any) => {
+//           const keys = Object.keys(row);
+//           const countryName = row[keys[0]]?.trim();
+//           const details = row[keys[1]];
+//           if (countryName) data[countryName] = details;
+//         });
+//         setAccounts(data);
+//         setIsLoading(false);
+//       },
+//       error: (err) => {
+//         console.error("خطأ في جلب البيانات:", err);
+//         setError(true);
+//         setIsLoading(false);
+//       },
+//     });
+//   }, []);
+
+//   const methods = [
+//     "ويسترن يونيون",
+//     "موني جرام",
+//     "ريا",
+//     "حساب بنكي",
+//     "محفظة إلكترونية",
+//   ];
+
+//   const handleWhatsApp = () => {
+//     const phone = "966500000000";
+//     const message = `مرحباً، أريد طلب حساب.
+// الدولة: ${country}
+// طريقة التحويل: ${method}
+
+// بيانات الحساب المطلوبة:
+// ${accounts[country]}`;
+//     window.open(`https://wa.me/${phone}?text=${encodeURIComponent(message)}`, "_blank");
+//   };
+
+//   const copyToClipboard = (text: string) => {
+//     navigator.clipboard.writeText(text);
+//     alert("تم نسخ رقم الحساب بنجاح، يمكنك لصقه الآن!");
+//   };
+
+//   const Dropdown = ({ value, options, onSelect, isOpen, setIsOpen }: any) => (
+//     <div className="relative w-full">
+//       <div 
+//         onClick={() => setIsOpen(!isOpen)}
+//         className="w-full bg-white/15 backdrop-blur-md border border-[#D4AF37]/40 rounded-2xl p-4 text-white text-lg cursor-pointer flex justify-between items-center"
+//       >
+//         {value} <span>{isOpen ? '▲' : '▼'}</span>
+//       </div>
+//       {isOpen && (
+//         <div className="absolute z-20 w-full mt-2 bg-white rounded-2xl shadow-xl overflow-hidden max-h-60 overflow-y-auto">
+//           {options.map((opt: string, i: number) => (
+//             <div 
+//               key={i} 
+//               onClick={() => { onSelect(opt); setIsOpen(false); }}
+//               className="p-4 hover:bg-[#D4AF37]/20 text-black cursor-pointer transition-colors text-right"
+//             >
+//               {opt}
+//             </div>
+//           ))}
+//         </div>
+//       )}
+//     </div>
+//   );
+
+//   return (
+//     <main className="relative min-h-screen flex items-center justify-center p-4 overflow-hidden font-sans">
+//       <Head>
+//         <link rel="icon" href="/favicon.jpeg" />
+//         <title>طلب حساب</title>
+//       </Head>
+
+//       <video autoPlay loop muted playsInline className="absolute inset-0 w-full h-full object-cover">
+//         <source src="/money.mp4" type="video/mp4" />
+//       </video>
+
+//       <div className="absolute inset-0 bg-black/60 z-0"></div>
+
+//       <div className="relative z-10 bg-white/10 backdrop-blur-lg rounded-3xl shadow-2xl p-6 md:p-8 w-full max-w-sm border border-white/10 text-center transition-all duration-500">
+//         <div className="mb-6">
+//           <div className="w-20 h-20 mx-auto bg-[#D4AF37]/20 rounded-full flex items-center justify-center mb-4 border border-[#D4AF37]/30">
+//             <span className="text-4xl">💰</span>
+//           </div>
+//           <h1 className="text-2xl font-bold text-white">طلب حساب</h1>
+//         </div>
+
+//         {isLoading ? (
+//           <p className="text-white">جاري تحميل البيانات...</p>
+//         ) : error ? (
+//           <p className="text-red-400">حدث خطأ في تحميل البيانات.</p>
+//         ) : !showAccount ? (
+//           <form className="space-y-4" onSubmit={(e) => {
+//             e.preventDefault();
+//             if (country !== "اختر الدولة" && method !== "طريقة التحويل") setShowAccount(true);
+//           }}>
+//             <Dropdown value={country} options={Object.keys(accounts)} onSelect={setCountry} isOpen={isOpenCountry} setIsOpen={setIsOpenCountry} />
+//             <Dropdown value={method} options={methods} onSelect={setMethod} isOpen={isOpenMethod} setIsOpen={setIsOpenMethod} />
+//             <button type="submit" className="w-full bg-[#D4AF37] text-black font-black py-4 rounded-xl shadow-lg animate-pulse hover:animate-none">طلب الحساب</button>
+//           </form>
+//         ) : (
+//           <div className="space-y-4 animate-in fade-in duration-500">
+//             <div className="bg-[#D4AF37]/20 border border-[#D4AF37] p-6 rounded-xl text-white font-bold text-right" style={{ whiteSpace: "pre-line" }}>
+//               <p className="mb-3 text-[#D4AF37] text-lg">بيانات الحساب لـ {country}:</p>
+//               <div className="whitespace-pre-line break-words leading-8 text-base">{accounts[country]}</div>
+//             </div>
+//             <button onClick={() => copyToClipboard(accounts[country])} className="w-full bg-blue-500 text-white font-bold py-3 rounded-xl shadow-lg">نسخ البيانات</button>
+//             <button onClick={handleWhatsApp} className="w-full bg-green-500 text-white font-bold py-4 rounded-xl shadow-lg hover:bg-green-600">اطلب حساب</button>
+            
+//             {/* زر الخروج الذي يوجه المستخدم لصفحة أخرى */}
+//             <button onClick={() => window.location.href = "https://www.google.com"} className="text-white/50 underline text-sm">
+//               خروج
+//             </button>
+//           </div>
+//         )}
+//       </div>
+//     </main>
+//   );
+// }
+
+
+
+
 "use client";
 
 import { useState, useEffect } from "react";
@@ -11,9 +160,10 @@ export default function UserInterface() {
   const [accounts, setAccounts] = useState<any>({});
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(false);
-
   const [isOpenCountry, setIsOpenCountry] = useState(false);
-  const [isOpenMethod, setIsOpenMethod] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+
+  const phone = "324681333331"; 
 
   const sheetUrl =
     "https://docs.google.com/spreadsheets/d/e/2PACX-1vRwWDBB6yYXnFVXSzH8jWk3_hE9I01uyNv1_BIVyShqjaYsfwTlOraC4DQBpqwcTNah7dnb9Aau537n/pub?gid=0&single=true&output=csv";
@@ -34,76 +184,47 @@ export default function UserInterface() {
         setAccounts(data);
         setIsLoading(false);
       },
-      error: (err) => {
-        console.error("خطأ في جلب البيانات:", err);
+      error: () => {
         setError(true);
         setIsLoading(false);
       },
     });
   }, []);
 
-  const methods = [
-    "ويسترن يونيون",
-    "موني جرام",
-    "ريا",
-    "حساب بنكي",
-    "محفظة إلكترونية",
-  ];
-
-  const handleWhatsApp = () => {
-    const phone = "966500000000";
-    const message = `مرحباً، أريد طلب حساب.
-الدولة: ${country}
-طريقة التحويل: ${method}
-
-بيانات الحساب المطلوبة:
-${accounts[country]}`;
+  const handleWhatsApp = (msg?: string) => {
+    const message = msg || `مرحباً، أريد طلب حساب.\nالدولة: ${country}\nطريقة التحويل: ${method}\nبيانات الحساب:\n${accounts[country]}`;
     window.open(`https://wa.me/${phone}?text=${encodeURIComponent(message)}`, "_blank");
   };
 
   const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text);
-    alert("تم نسخ رقم الحساب بنجاح، يمكنك لصقه الآن!");
+    alert("تم النسخ!");
   };
 
-  const Dropdown = ({ value, options, onSelect, isOpen, setIsOpen }: any) => (
-    <div className="relative w-full">
-      <div 
-        onClick={() => setIsOpen(!isOpen)}
-        className="w-full bg-white/15 backdrop-blur-md border border-[#D4AF37]/40 rounded-2xl p-4 text-white text-lg cursor-pointer flex justify-between items-center"
-      >
-        {value} <span>{isOpen ? '▲' : '▼'}</span>
-      </div>
-      {isOpen && (
-        <div className="absolute z-20 w-full mt-2 bg-white rounded-2xl shadow-xl overflow-hidden max-h-60 overflow-y-auto">
-          {options.map((opt: string, i: number) => (
-            <div 
-              key={i} 
-              onClick={() => { onSelect(opt); setIsOpen(false); }}
-              className="p-4 hover:bg-[#D4AF37]/20 text-black cursor-pointer transition-colors text-right"
-            >
-              {opt}
-            </div>
-          ))}
-        </div>
-      )}
-    </div>
+  const filteredCountries = Object.keys(accounts).filter(c => 
+    c.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   return (
     <main className="relative min-h-screen flex items-center justify-center p-4 overflow-hidden font-sans">
       <Head>
-        <link rel="icon" href="/favicon.jpeg" />
         <title>طلب حساب</title>
       </Head>
 
       <video autoPlay loop muted playsInline className="absolute inset-0 w-full h-full object-cover">
         <source src="/money.mp4" type="video/mp4" />
       </video>
-
       <div className="absolute inset-0 bg-black/60 z-0"></div>
 
-      <div className="relative z-10 bg-white/10 backdrop-blur-lg rounded-3xl shadow-2xl p-6 md:p-8 w-full max-w-sm border border-white/10 text-center transition-all duration-500">
+      <div onClick={() => handleWhatsApp("مرحباً، أستفسر عن خدماتكم.")} className="fixed bottom-6 left-6 z-50 cursor-pointer animate-pulse">
+        <div className="bg-green-500 p-3 rounded-full shadow-lg text-white flex items-center justify-center">
+          <svg viewBox="0 0 24 24" width="30" height="30" fill="currentColor">
+            <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.955c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.007 0C5.37 0 .002 5.367.002 12.004c0 2.092.547 4.136 1.588 5.933L.057 23.95l4.13-1.084a11.84 11.84 0 0 0 5.658 1.44H11.99c6.637 0 12.005-5.367 12.005-12.005 0-3.21-1.25-6.233-3.522-8.506" />
+          </svg>
+        </div>
+      </div>
+
+      <div className="relative z-10 bg-white/10 backdrop-blur-lg rounded-3xl shadow-2xl p-6 w-full max-w-sm border border-white/10 text-center">
         <div className="mb-6">
           <div className="w-20 h-20 mx-auto bg-[#D4AF37]/20 rounded-full flex items-center justify-center mb-4 border border-[#D4AF37]/30">
             <span className="text-4xl">💰</span>
@@ -111,35 +232,177 @@ ${accounts[country]}`;
           <h1 className="text-2xl font-bold text-white">طلب حساب</h1>
         </div>
 
-        {isLoading ? (
-          <p className="text-white">جاري تحميل البيانات...</p>
-        ) : error ? (
-          <p className="text-red-400">حدث خطأ في تحميل البيانات.</p>
-        ) : !showAccount ? (
-          <form className="space-y-4" onSubmit={(e) => {
-            e.preventDefault();
-            if (country !== "اختر الدولة" && method !== "طريقة التحويل") setShowAccount(true);
-          }}>
-            <Dropdown value={country} options={Object.keys(accounts)} onSelect={setCountry} isOpen={isOpenCountry} setIsOpen={setIsOpenCountry} />
-            <Dropdown value={method} options={methods} onSelect={setMethod} isOpen={isOpenMethod} setIsOpen={setIsOpenMethod} />
-            <button type="submit" className="w-full bg-[#D4AF37] text-black font-black py-4 rounded-xl shadow-lg animate-pulse hover:animate-none">طلب الحساب</button>
+        {isLoading ? <p className="text-white">جاري التحميل...</p> : !showAccount ? (
+          <form className="space-y-4" onSubmit={(e) => { e.preventDefault(); if (country !== "اختر الدولة") setShowAccount(true); }}>
+            <div className="w-full bg-white/15 p-4 rounded-2xl text-white cursor-pointer" onClick={() => setIsOpenCountry(!isOpenCountry)}>{country}</div>
+            {isOpenCountry && (
+              <div className="bg-white rounded-xl shadow-lg max-h-60 overflow-y-auto p-2">
+                <div className="relative mb-2">
+                    <input autoFocus placeholder="ابحث عن الدولة..." className="w-full p-2 border-b outline-none text-black pr-8" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} />
+                    {searchQuery && <button type="button" className="absolute left-2 top-2 text-gray-400 hover:text-black font-bold" onClick={() => setSearchQuery("")}>✕</button>}
+                </div>
+                {filteredCountries.map(c => <div key={c} className="p-3 hover:bg-gray-100 border-b text-right cursor-pointer" onClick={() => { setCountry(c); setIsOpenCountry(false); setSearchQuery(""); }}>{c}</div>)}
+              </div>
+            )}
+            <button type="submit" className="w-full bg-[#D4AF37] text-black font-black py-4 rounded-xl active:scale-95 transition-transform">طلب الحساب</button>
           </form>
         ) : (
-          <div className="space-y-4 animate-in fade-in duration-500">
-            <div className="bg-[#D4AF37]/20 border border-[#D4AF37] p-6 rounded-xl text-white font-bold text-right" style={{ whiteSpace: "pre-line" }}>
-              <p className="mb-3 text-[#D4AF37] text-lg">بيانات الحساب لـ {country}:</p>
-              <div className="whitespace-pre-line break-words leading-8 text-base">{accounts[country]}</div>
+          <div className="space-y-4 flex flex-col items-center">
+            <div className="bg-[#D4AF37]/20 border border-[#D4AF37] p-3 rounded-xl text-white font-bold text-right w-auto max-w-[90vw] overflow-hidden">
+              <p className="mb-1 text-[#D4AF37] text-sm">بيانات الحساب لـ {country}:</p>
+              <div className="text-sm text-right leading-relaxed whitespace-pre-line">
+                {String(accounts[country] || "").split('\n').map(line => line.trim()).filter(line => line !== "").join('\n')}
+              </div>
             </div>
-            <button onClick={() => copyToClipboard(accounts[country])} className="w-full bg-blue-500 text-white font-bold py-3 rounded-xl shadow-lg">نسخ البيانات</button>
-            <button onClick={handleWhatsApp} className="w-full bg-green-500 text-white font-bold py-4 rounded-xl shadow-lg hover:bg-green-600">اطلب حساب</button>
             
-            {/* زر الخروج الذي يوجه المستخدم لصفحة أخرى */}
-            <button onClick={() => window.location.href = "https://www.google.com"} className="text-white/50 underline text-sm">
-              خروج
-            </button>
+            <div className="w-full space-y-3">
+                <button onClick={() => copyToClipboard(accounts[country])} className="w-full bg-blue-500 text-white py-3 rounded-xl font-bold active:scale-95 transition-transform">نسخ البيانات</button>
+                <button onClick={() => handleWhatsApp()} className="w-full bg-green-500 text-white py-4 rounded-xl font-bold active:scale-95 transition-transform">اطلب حساب عبر واتساب</button>
+                <button onClick={() => setShowAccount(false)} className="text-white/70 underline text-sm">رجوع</button>
+            </div>
           </div>
         )}
       </div>
     </main>
   );
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// "use client";
+
+// import { useState, useEffect } from "react";
+// import Papa from "papaparse";
+// import Head from 'next/head';
+
+// export default function UserInterface() {
+//   const [country, setCountry] = useState("اختر الدولة");
+//   const [method, setMethod] = useState("طريقة التحويل");
+//   const [showAccount, setShowAccount] = useState(false);
+//   const [accounts, setAccounts] = useState<any>({});
+//   const [isLoading, setIsLoading] = useState(true);
+//   const [error, setError] = useState(false);
+//   const [isOpenCountry, setIsOpenCountry] = useState(false);
+
+//   const phone = "324681333331"; 
+
+//   const sheetUrl =
+//     "https://docs.google.com/spreadsheets/d/e/2PACX-1vRwWDBB6yYXnFVXSzH8jWk3_hE9I01uyNv1_BIVyShqjaYsfwTlOraC4DQBpqwcTNah7dnb9Aau537n/pub?gid=0&single=true&output=csv";
+
+//   useEffect(() => {
+//     Papa.parse(sheetUrl, {
+//       download: true,
+//       header: true,
+//       skipEmptyLines: true,
+//       complete: (results) => {
+//         const data: any = {};
+//         results.data.forEach((row: any) => {
+//           const keys = Object.keys(row);
+//           const countryName = row[keys[0]]?.trim();
+//           const details = row[keys[1]];
+//           if (countryName) data[countryName] = details;
+//         });
+//         setAccounts(data);
+//         setIsLoading(false);
+//       },
+//       error: () => {
+//         setError(true);
+//         setIsLoading(false);
+//       },
+//     });
+//   }, []);
+
+//   const handleWhatsApp = (msg?: string) => {
+//     const message = msg || `مرحباً، أريد طلب حساب.\nالدولة: ${country}\nطريقة التحويل: ${method}\nبيانات الحساب:\n${accounts[country]}`;
+//     window.open(`https://wa.me/${phone}?text=${encodeURIComponent(message)}`, "_blank");
+//   };
+
+//   const copyToClipboard = (text: string) => {
+//     navigator.clipboard.writeText(text);
+//     alert("تم النسخ!");
+//   };
+
+//   return (
+//     <main className="relative min-h-screen flex items-center justify-center p-4 overflow-hidden font-sans">
+//       <Head>
+//         <title>طلب حساب</title>
+//       </Head>
+
+//       <video autoPlay loop muted playsInline className="absolute inset-0 w-full h-full object-cover">
+//         <source src="/money.mp4" type="video/mp4" />
+//       </video>
+//       <div className="absolute inset-0 bg-black/60 z-0"></div>
+
+//       {/* أيقونة الواتساب العائمة يسار الشاشة */}
+//       <div onClick={() => handleWhatsApp("مرحباً، أستفسر عن خدماتكم.")} className="fixed bottom-6 left-6 z-50 cursor-pointer animate-pulse">
+//         <div className="bg-green-500 p-3 rounded-full shadow-lg text-white flex items-center justify-center">
+//           <svg viewBox="0 0 24 24" width="30" height="30" fill="currentColor">
+//             <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.955c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.007 0C5.37 0 .002 5.367.002 12.004c0 2.092.547 4.136 1.588 5.933L.057 23.95l4.13-1.084a11.84 11.84 0 0 0 5.658 1.44H11.99c6.637 0 12.005-5.367 12.005-12.005 0-3.21-1.25-6.233-3.522-8.506" />
+//           </svg>
+//         </div>
+//       </div>
+
+//       <div className="relative z-10 bg-white/10 backdrop-blur-lg rounded-3xl shadow-2xl p-6 w-full max-w-sm border border-white/10 text-center">
+//         <div className="mb-6">
+//           <div className="w-20 h-20 mx-auto bg-[#D4AF37]/20 rounded-full flex items-center justify-center mb-4 border border-[#D4AF37]/30">
+//             <span className="text-4xl">💰</span>
+//           </div>
+//           <h1 className="text-2xl font-bold text-white">طلب حساب</h1>
+//         </div>
+
+//         {isLoading ? <p className="text-white">جاري التحميل...</p> : !showAccount ? (
+//           <form className="space-y-4" onSubmit={(e) => { e.preventDefault(); if (country !== "اختر الدولة") setShowAccount(true); }}>
+//             <div className="w-full bg-white/15 p-4 rounded-2xl text-white cursor-pointer" onClick={() => setIsOpenCountry(!isOpenCountry)}>{country}</div>
+//             {isOpenCountry && (
+//               <div className="bg-white rounded-xl shadow-lg max-h-40 overflow-y-auto">
+//                 {Object.keys(accounts).map(c => <div key={c} className="p-3 border-b text-right cursor-pointer" onClick={() => { setCountry(c); setIsOpenCountry(false); }}>{c}</div>)}
+//               </div>
+//             )}
+//             <button type="submit" className="w-full bg-[#D4AF37] text-black font-black py-4 rounded-xl">طلب الحساب</button>
+//           </form>
+//         ) : (
+//           <div className="space-y-4 flex flex-col items-center">
+//             <div className="bg-[#D4AF37]/20 border border-[#D4AF37] p-3 rounded-xl text-white font-bold text-right w-auto max-w-[90vw] overflow-hidden">
+//               <p className="mb-1 text-[#D4AF37] text-sm">بيانات الحساب لـ {country}:</p>
+//               <div className="text-sm text-right leading-relaxed whitespace-pre-line">
+//                 {String(accounts[country] || "").split('\n').map(line => line.trim()).filter(line => line !== "").join('\n')}
+//               </div>
+//             </div>
+            
+//             <div className="w-full space-y-3">
+//                 <button onClick={() => copyToClipboard(accounts[country])} className="w-full bg-blue-500 text-white py-3 rounded-xl font-bold">نسخ البيانات</button>
+//                 <button onClick={() => handleWhatsApp()} className="w-full bg-green-500 text-white py-4 rounded-xl font-bold">اطلب حساب عبر واتساب</button>
+//                 <button onClick={() => setShowAccount(false)} className="text-white/70 underline text-sm">رجوع</button>
+//             </div>
+//           </div>
+//         )}
+//       </div>
+//     </main>
+//   );
+// }
