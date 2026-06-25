@@ -1,8 +1,10 @@
 
 import type { Metadata } from "next";
-import Navbar from "@/componant/Navbar"; // تأكد من اسم المجلد components أو componant حسب ما هو موجود عندك
+
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+
+
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -36,6 +38,7 @@ export default function RootLayout({
 <main className="flex-grow"> {/* قمنا بحذف pt-20 من هنا */}
   {children}
 </main>
+
       </body>
     </html>
   );
