@@ -150,7 +150,7 @@ export default function LoginPage() {
       {isModalOpen && (
         <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
           <div className="bg-white p-6 rounded-2xl w-full max-w-xs shadow-2xl" dir="rtl">
-            <h3 className="font-black mb-4">تغيير كلمة المرور</h3>
+            <h3 className="font-black text-black text-lg mb-4">تغيير كلمة المرور</h3>
             <input type="password" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} placeholder="كلمة المرور الجديدة" className="w-full p-3 border rounded-xl mb-4" />
             {modalMessage && <p className="text-sm font-bold mb-4 text-red-600">{modalMessage}</p>}
             <div className="flex gap-2">
@@ -166,6 +166,9 @@ export default function LoginPage() {
     </main>
   );
 }
+
+
+
 // "use client";
 
 // import  { useState } from "react";
